@@ -16,15 +16,87 @@ enum class TokenType
 struct Token
 {
     TokenType type;
-    optional<string> value;
+    optional<string> value {};
 };
+string tokens_to_asm(const vector<Token>& tokens)
+{
+    stringstream output;
+    output << " global _start\n_start:\n";
+    for (int i = 0;i<tokens.size();i++)
+    {
+        auto token = tokens[i];
+        if (token.type == TokenType::_return)
+        {
+            if (i+1<tokens.size() && tokens[i+1].type == TokenType::int_literal)
+            {
+                if (i+2<tokens.size() && tokens[i+2].type == TokenType::semicolon)
+                {
+                    output<<"   mov rax,60\n";
+                    output<<"   mov rdi, "<<tokens[i+1].value.value()<<"\n";
+                    output<<"   syscall";
+                }
+            }
+        }
+    }
+    return output.str();
 
+}
 vector<Token> tokenize(const string &str)
 {
-    for (char c:str)
+    vector<Token> tokens;
+    string buf;
+    for (int i=0;i<str.length();i++)
     {
-        cout<<c<<endl;
+        char c = str[i];
+        if (isalpha(c))
+        {
+            buf.push_back(c);
+            i++;
+            while (i<str.size() && isalpha(str[i]))
+            {
+                buf.push_back(str[i]);
+                i++;
+            }
+            i--;
+            if (buf == "return")
+            {
+                tokens.push_back({.type = TokenType::_return});
+                buf.clear();
+                continue;
+            }
+            else
+            {
+                cerr<<"Kar diya kaand"<<endl;
+                exit(EXIT_FAILURE);
+            }
+        }
+        else if (isdigit(c))
+        {
+            buf.push_back(c);
+            i++;
+            while (i<str.size() && isdigit(str[i]))
+            {
+                buf.push_back(str[i]);
+                i++;
+            }
+            i--;
+            tokens.push_back({.type = TokenType::int_literal,.value = buf});
+            buf.clear();
+        }
+        else if (c == ';')
+        {
+            tokens.push_back({.type = TokenType::semicolon});
+        }
+        else if (isspace(c))
+        {
+            continue;
+        }
+        else
+        {
+            cout<<"kar diya kaand";
+        }
     }
+    return tokens;
 }
 
 int main(int argc,char* argv[])
@@ -42,6 +114,12 @@ int main(int argc,char* argv[])
         contents_stream<<input.rdbuf();
         contents = contents_stream.str();
     }
-    tokenize(contents);
+    vector <Token> tokens = tokenize(contents);
+    {
+        fstream file("out.asm",ios::out);
+        file<<tokens_to_asm(tokens);
+    }
+    system("nasm -felf64 out.asm");
+    system("ld -o out out.o");
     return EXIT_SUCCESS;
 }
