@@ -60,6 +60,11 @@ vector<Token> tokenize(const string &str)
             i--;
             if (buf == "return")
             {
+                // Token t;
+                // t.type = TokenType::_return;
+                // t.value = std::nullopt;
+                // tokens.push_back(t);
+
                 tokens.push_back({.type = TokenType::_return});
                 buf.clear();
                 continue;
@@ -114,8 +119,8 @@ int main(int argc,char* argv[])
         contents_stream<<input.rdbuf();
         contents = contents_stream.str();
     }
-    vector <Token> tokens = tokenize(contents);
     {
+        vector <Token> tokens = tokenize(contents);
         fstream file("out.asm",ios::out);
         file<<tokens_to_asm(tokens);
     }
