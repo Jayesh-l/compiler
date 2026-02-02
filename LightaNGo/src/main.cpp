@@ -8,7 +8,7 @@ using namespace std;
 
 enum class TokenType
 {
-    _return,
+    retreat,
     int_literal,
     semicolon
 };
@@ -25,7 +25,7 @@ string tokens_to_asm(const vector<Token>& tokens)
     for (int i = 0;i<tokens.size();i++)
     {
         auto token = tokens[i];
-        if (token.type == TokenType::_return)
+        if (token.type == TokenType::retreat)
         {
             if (i+1<tokens.size() && tokens[i+1].type == TokenType::int_literal)
             {
@@ -58,14 +58,14 @@ vector<Token> tokenize(const string &str)
                 i++;
             }
             i--;
-            if (buf == "return")
+            if (buf == "retreat")
             {
                 // Token t;
-                // t.type = TokenType::_return;
+                // t.type = TokenType::retreat;
                 // t.value = std::nullopt;
                 // tokens.push_back(t);
 
-                tokens.push_back({.type = TokenType::_return});
+                tokens.push_back({.type = TokenType::retreat});
                 buf.clear();
                 continue;
             }
