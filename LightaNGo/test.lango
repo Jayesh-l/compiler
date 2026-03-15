@@ -1,1 +1,18 @@
-retreat 10;
+let y = (10 - 2 * 3) / 2;
+let x = 7; // i can add comment here
+// and here too heheheeheeehehehe
+if (0) {
+    x = 1;
+} elif (0) {
+    x = 2;
+} else {
+    x = 69;
+}
+/*
+exit(y);
+heheeheheeehhehe programming langgggg
+can i bootstrap it??????????????????
+*/
+
+exit(x);
+
